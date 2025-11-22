@@ -1,4 +1,3 @@
--- testing boolvalues but removed :( this is just a test 
 return function(otterclient)
     local Players = game:GetService("Players")
     local player = Players.LocalPlayer
