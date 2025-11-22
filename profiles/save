@@ -1,1 +1,65 @@
+local HttpService = game:GetService("HttpService")
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
 
+local folderName = "OtterClient"
+local profilesFolder = folderName .. "/Profiles"
+local customModulesFolder = folderName .. "/CustomModules"
+
+local function ensureFolders()
+    if not isfolder(folderName) then
+        makefolder(folderName)
+    end
+    if not isfolder(profilesFolder) then
+        makefolder(profilesFolder)
+    end
+    if not isfolder(customModulesFolder) then
+        makefolder(customModulesFolder)
+    end
+end
+
+local function getProfilePath()
+    local gameId = tostring(game.PlaceId)
+    return profilesFolder .. "/" .. gameId .. ".json"
+end
+
+local function saveProfile(data)
+    ensureFolders()
+    local path = getProfilePath()
+    local json = HttpService:JSONEncode(data)
+    writefile(path, json)
+end
+
+local function loadProfile()
+    ensureFolders()
+    local path = getProfilePath()
+    if isfile(path) then
+        local json = readfile(path)
+        return HttpService:JSONDecode(json)
+    end
+    return nil
+end
+
+local function saveCustomModules(modules)
+    ensureFolders()
+    local gameId = tostring(game.PlaceId)
+    local path = customModulesFolder .. "/" .. gameId .. ".lua"
+    writefile(path, modules)
+end
+
+local function loadCustomModules()
+    ensureFolders()
+    local gameId = tostring(game.PlaceId)
+    local path = customModulesFolder .. "/" .. gameId .. ".lua"
+    if isfile(path) then
+        return readfile(path)
+    end
+    return nil
+end
+
+return {
+    save = saveProfile,
+    load = loadProfile,
+    saveCustom = saveCustomModules,
+    loadCustom = loadCustomModules
+}
